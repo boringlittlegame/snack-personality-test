@@ -1,0 +1,1336 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>你是什麼小吃</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #201816;
+      --muted: #736761;
+      --paper: #fff6e4;
+      --card: #fffaf0;
+      --line: #2b211d;
+      --red: #d84a2b;
+      --green: #2f8f63;
+      --yellow: #f2bd3b;
+      --blue: #2f70b8;
+      --pink: #d95c88;
+      --shadow: 0 18px 50px rgba(54, 36, 20, .18);
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 20%, rgba(242, 189, 59, .28), transparent 26rem),
+        radial-gradient(circle at 85% 15%, rgba(47, 143, 99, .18), transparent 25rem),
+        linear-gradient(135deg, #fff0d1 0%, #ffdca3 42%, #f8c26f 100%);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .16;
+      background-image:
+        linear-gradient(90deg, rgba(32,24,22,.18) 1px, transparent 1px),
+        linear-gradient(rgba(32,24,22,.18) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(to bottom, black, transparent 80%);
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+    }
+
+    .app {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 42px;
+      position: relative;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--line);
+      background: var(--red);
+      color: #fff7df;
+      border-radius: 8px;
+      box-shadow: 4px 4px 0 var(--line);
+      transform: rotate(-4deg);
+    }
+
+    .nav-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .ghost-btn,
+    .primary-btn,
+    .option-btn {
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+      box-shadow: 4px 4px 0 var(--line);
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+
+    .ghost-btn,
+    .primary-btn {
+      min-height: 42px;
+      padding: 9px 14px;
+      font-weight: 800;
+    }
+
+    .primary-btn {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .ghost-btn:hover,
+    .primary-btn:hover,
+    .option-btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--line);
+    }
+
+    .screen {
+      display: none;
+      animation: rise .35s ease both;
+    }
+
+    .screen.active { display: block; }
+
+    @keyframes rise {
+      from { transform: translateY(12px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .hero {
+      min-height: calc(100vh - 112px);
+      display: grid;
+      grid-template-columns: minmax(0, 1.06fr) minmax(330px, .94fr);
+      align-items: center;
+      gap: 34px;
+      padding-bottom: 36px;
+    }
+
+    .title-wrap {
+      position: relative;
+      padding-top: 16px;
+    }
+
+    .stamp {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--yellow);
+      border: 2px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 13px;
+      font-weight: 900;
+      box-shadow: 3px 3px 0 var(--line);
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: clamp(48px, 8vw, 104px);
+      line-height: .93;
+      margin: 0 0 18px;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      max-width: 650px;
+      font-size: clamp(18px, 2.2vw, 26px);
+      line-height: 1.55;
+      margin: 0 0 28px;
+      color: #3f332d;
+      font-weight: 700;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hero-actions .primary-btn {
+      min-height: 54px;
+      padding: 13px 20px;
+      font-size: 18px;
+    }
+
+    .stall {
+      position: relative;
+      min-height: 560px;
+      border: 3px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(#fff8e8 0 34%, #f8e5bb 34% 100%);
+      box-shadow: var(--shadow), 8px 8px 0 var(--line);
+      overflow: hidden;
+    }
+
+    .awning {
+      height: 86px;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      border-bottom: 3px solid var(--line);
+    }
+
+    .awning span:nth-child(odd) { background: var(--red); }
+    .awning span:nth-child(even) { background: #fff6e4; }
+
+    .signboard {
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%) rotate(2deg);
+      width: min(330px, calc(100% - 42px));
+      text-align: center;
+      border: 3px solid var(--line);
+      border-radius: 8px;
+      background: var(--green);
+      color: #fff;
+      padding: 12px;
+      box-shadow: 5px 5px 0 var(--line);
+      font-weight: 950;
+      font-size: 28px;
+      z-index: 2;
+    }
+
+    .snack-grid {
+      position: absolute;
+      left: 28px;
+      right: 28px;
+      top: 135px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .snack-tile {
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: #fffaf0;
+      box-shadow: 3px 3px 0 var(--line);
+      transform: rotate(var(--r));
+      overflow: hidden;
+    }
+
+    .sprite-icon {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background-image: url("assets/snack-spritesheet.png");
+      background-size: 800% 400%;
+      background-position: var(--sprite-x) var(--sprite-y);
+      background-repeat: no-repeat;
+    }
+
+    .snack-tile .sprite-icon {
+      width: 92%;
+      height: 92%;
+      border-radius: 6px;
+    }
+
+    .counter {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 120px;
+      border-top: 3px solid var(--line);
+      background:
+        linear-gradient(90deg, rgba(32,24,22,.08) 1px, transparent 1px) 0 0 / 24px 100%,
+        #c98546;
+    }
+
+    .counter::before,
+    .counter::after {
+      content: "";
+      position: absolute;
+      bottom: 38px;
+      width: 82px;
+      height: 34px;
+      border: 2px solid var(--line);
+      border-radius: 999px;
+      background: #fff6e4;
+      box-shadow: 3px 3px 0 var(--line);
+    }
+
+    .counter::before { left: 54px; }
+    .counter::after { right: 54px; }
+
+    .panel {
+      border: 3px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+      box-shadow: var(--shadow), 8px 8px 0 var(--line);
+    }
+
+    .quiz-shell {
+      display: grid;
+      grid-template-columns: 290px minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .receipt {
+      padding: 22px;
+      min-height: 420px;
+      background:
+        linear-gradient(#fffaf0, #fff0d0),
+        repeating-linear-gradient(0deg, transparent 0 22px, rgba(32,24,22,.08) 22px 23px);
+      position: sticky;
+      top: 20px;
+    }
+
+    .receipt h2,
+    .question-card h2,
+    .result-copy h2,
+    .gallery h2 {
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    .receipt h2 { font-size: 22px; }
+
+    .meter {
+      height: 12px;
+      border: 2px solid var(--line);
+      border-radius: 999px;
+      margin: 18px 0 16px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .meter-fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--red), var(--yellow), var(--green));
+      transition: width .25s ease;
+    }
+
+    .dim-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .dim-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--muted);
+      border-bottom: 1px dashed rgba(32,24,22,.25);
+      padding-bottom: 8px;
+    }
+
+    .question-card {
+      padding: clamp(20px, 4vw, 34px);
+    }
+
+    .q-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .question-card h2 {
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.17;
+      margin-bottom: 24px;
+    }
+
+    .options {
+      display: grid;
+      gap: 14px;
+    }
+
+    .option-btn {
+      width: 100%;
+      min-height: 78px;
+      padding: 16px 18px;
+      text-align: left;
+      display: grid;
+      grid-template-columns: 36px minmax(0, 1fr);
+      align-items: center;
+      gap: 14px;
+      font-weight: 850;
+      line-height: 1.45;
+    }
+
+    .option-key {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      border: 2px solid var(--line);
+      background: var(--yellow);
+      font-weight: 950;
+    }
+
+    .option-btn:nth-child(2) .option-key { background: #f6a2bd; }
+    .option-btn:nth-child(3) .option-key { background: #9ad8b7; }
+    .option-btn:nth-child(4) .option-key { background: #9fc3ed; }
+
+    .quiz-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .result-layout {
+      display: grid;
+      grid-template-columns: minmax(320px, .9fr) minmax(0, 1.1fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .result-art {
+      min-height: 560px;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(255,255,255,.95), rgba(255,255,255,.25) 34%, transparent 35%),
+        linear-gradient(145deg, #fbd16d, #f08c54 52%, #d84a2b);
+    }
+
+    .plate {
+      position: absolute;
+      width: min(390px, calc(100% - 58px));
+      aspect-ratio: 1;
+      left: 50%;
+      top: 48%;
+      transform: translate(-50%, -50%);
+      border: 3px solid var(--line);
+      border-radius: 50%;
+      background: #fff9ec;
+      box-shadow: 8px 8px 0 var(--line);
+      display: grid;
+      place-items: center;
+    }
+
+    .plate::after {
+      content: "";
+      position: absolute;
+      inset: 10%;
+      border: 2px solid rgba(32, 24, 22, .18);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .result-sprite {
+      width: 84%;
+      height: 84%;
+      border: 3px solid var(--line);
+      border-radius: 8px;
+      background-color: #fffaf0;
+      box-shadow: 5px 5px 0 rgba(32,24,22,.28);
+      filter: drop-shadow(4px 6px 0 rgba(32,24,22,.25));
+      z-index: 1;
+    }
+
+    .code-ticket {
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      bottom: 22px;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,250,240,.94);
+      box-shadow: 4px 4px 0 var(--line);
+      padding: 16px;
+      font-weight: 950;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .result-copy {
+      padding: clamp(22px, 4vw, 34px);
+    }
+
+    .result-copy h2 {
+      font-size: clamp(38px, 5vw, 72px);
+      line-height: .95;
+      margin-bottom: 12px;
+    }
+
+    .tagline {
+      font-size: 21px;
+      line-height: 1.45;
+      font-weight: 900;
+      color: var(--red);
+      margin-bottom: 20px;
+    }
+
+    .desc {
+      color: #3f332d;
+      font-size: 18px;
+      line-height: 1.85;
+      margin-bottom: 22px;
+    }
+
+    .trait-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .trait {
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: #fff4d7;
+      padding: 14px;
+      min-height: 116px;
+    }
+
+    .trait b {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .trait span {
+      color: #594c46;
+      line-height: 1.55;
+      font-weight: 650;
+    }
+
+    .share-box {
+      border: 2px dashed var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #fffdf7;
+      color: #3f332d;
+      line-height: 1.65;
+      font-weight: 750;
+      margin-bottom: 16px;
+    }
+
+    .gallery {
+      margin-top: 28px;
+      padding: clamp(18px, 3vw, 26px);
+    }
+
+    .gallery-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .gallery-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-weight: 750;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .mini-card {
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: #fff8e8;
+      min-height: 130px;
+      padding: 12px;
+      display: grid;
+      gap: 6px;
+      box-shadow: 3px 3px 0 var(--line);
+    }
+
+    .mini-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-weight: 950;
+    }
+
+    .mini-emoji {
+      width: 46px;
+      height: 46px;
+      border: 2px solid rgba(32,24,22,.7);
+      border-radius: 8px;
+      background-color: #fffdf7;
+    }
+    .mini-card small { color: var(--muted); font-weight: 850; }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: var(--ink);
+      color: #fff8e8;
+      padding: 12px 16px;
+      box-shadow: 4px 4px 0 rgba(0,0,0,.25);
+      font-weight: 850;
+      transition: opacity .2s ease, transform .2s ease;
+      z-index: 10;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 860px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav-pill {
+        justify-content: flex-start;
+      }
+
+      .hero,
+      .quiz-shell,
+      .result-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        min-height: 0;
+      }
+
+      .stall {
+        min-height: 450px;
+        order: -1;
+      }
+
+      .snack-grid {
+        grid-template-columns: repeat(4, 1fr);
+        left: 16px;
+        right: 16px;
+        gap: 8px;
+      }
+
+      .snack-tile { font-size: 28px; }
+      .receipt { position: static; min-height: auto; }
+      .result-art { min-height: 430px; }
+      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 520px) {
+      .app {
+        width: min(100% - 20px, 1120px);
+        padding-top: 16px;
+      }
+
+      .brand-mark {
+        width: 38px;
+        height: 38px;
+      }
+
+      .ghost-btn,
+      .primary-btn {
+        width: 100%;
+      }
+
+      .nav-pill,
+      .hero-actions,
+      .quiz-actions {
+        width: 100%;
+      }
+
+      .stall { min-height: 380px; }
+      .signboard { font-size: 22px; }
+      .counter { height: 88px; }
+      .counter::before,
+      .counter::after { display: none; }
+      .question-card h2 { font-size: 28px; }
+      .option-btn {
+        min-height: 74px;
+        padding: 13px;
+        grid-template-columns: 32px minmax(0, 1fr);
+      }
+      .option-key {
+        width: 32px;
+        height: 32px;
+      }
+      .trait-grid,
+      .cards {
+        grid-template-columns: 1fr;
+      }
+      .plate {
+        width: min(300px, calc(100% - 42px));
+      }
+      .result-sprite {
+        width: 86%;
+        height: 86%;
+      }
+      .code-ticket {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">食</div>
+        <div>
+          <div>你是什麼小吃</div>
+          <small>32 型小吃格</small>
+        </div>
+      </div>
+      <div class="nav-pill">
+        <button class="ghost-btn" id="navGallery" type="button">看小吃圖鑑</button>
+        <button class="ghost-btn" id="navRestart" type="button">重新開始</button>
+      </div>
+    </header>
+
+    <section id="startScreen" class="screen active">
+      <div class="hero">
+        <div class="title-wrap">
+          <div class="stamp">32 種小吃</div>
+          <h1>你是什麼小吃？</h1>
+          <p class="subtitle">總共 20 題</p>
+          <div class="hero-actions">
+            <button class="primary-btn" id="startBtn" type="button">開始測驗</button>
+            <button class="ghost-btn" id="peekBtn" type="button">先偷看圖鑑</button>
+          </div>
+        </div>
+
+        <div class="stall" aria-hidden="true">
+          <div class="awning">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="signboard">人格小吃攤</div>
+          <div class="snack-grid">
+            <div class="snack-tile" style="--r:-4deg"><span class="sprite-icon" style="--sprite-x:0%; --sprite-y:0%"></span></div>
+            <div class="snack-tile" style="--r:3deg"><span class="sprite-icon" style="--sprite-x:14.2857%; --sprite-y:0%"></span></div>
+            <div class="snack-tile" style="--r:-2deg"><span class="sprite-icon" style="--sprite-x:28.5714%; --sprite-y:0%"></span></div>
+            <div class="snack-tile" style="--r:4deg"><span class="sprite-icon" style="--sprite-x:42.8571%; --sprite-y:0%"></span></div>
+            <div class="snack-tile" style="--r:2deg"><span class="sprite-icon" style="--sprite-x:57.1429%; --sprite-y:0%"></span></div>
+            <div class="snack-tile" style="--r:-3deg"><span class="sprite-icon" style="--sprite-x:71.4286%; --sprite-y:0%"></span></div>
+            <div class="snack-tile" style="--r:4deg"><span class="sprite-icon" style="--sprite-x:85.7143%; --sprite-y:0%"></span></div>
+            <div class="snack-tile" style="--r:-5deg"><span class="sprite-icon" style="--sprite-x:100%; --sprite-y:0%"></span></div>
+          </div>
+          <div class="counter"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="quizScreen" class="screen">
+      <div class="quiz-shell">
+        <aside class="panel receipt">
+          <h2>測驗收據</h2>
+          <div class="meter" aria-label="進度">
+            <div class="meter-fill" id="meterFill"></div>
+          </div>
+          <div id="progressText">第 1 / 20 題</div>
+          <div class="dim-list">
+            <div class="dim-row"><span>外放 / 內收</span><strong id="dimSocial">--</strong></div>
+            <div class="dim-row"><span>精緻 / 粗放</span><strong id="dimPolish">--</strong></div>
+            <div class="dim-row"><span>穩定 / 變化</span><strong id="dimRhythm">--</strong></div>
+            <div class="dim-row"><span>柔軟 / 強烈</span><strong id="dimForce">--</strong></div>
+            <div class="dim-row"><span>勤快 / 懶散</span><strong id="dimEnergy">--</strong></div>
+          </div>
+        </aside>
+
+        <article class="panel question-card">
+          <div class="q-meta">
+            <span id="questionAxis">人格切面</span>
+            <span id="questionNo">01</span>
+          </div>
+          <h2 id="questionText"></h2>
+          <div class="options" id="options"></div>
+          <div class="quiz-actions">
+            <button class="ghost-btn" id="backBtn" type="button">上一題</button>
+            <button class="ghost-btn" id="clearBtn" type="button">清空重測</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="screen">
+      <div class="result-layout">
+        <div class="panel result-art">
+          <div class="plate">
+            <div class="sprite-icon result-sprite" id="resultSprite"></div>
+          </div>
+          <div class="code-ticket">
+            <span id="resultCode">CODE</span>
+            <span id="resultFlavor">人格氣味</span>
+          </div>
+        </div>
+        <article class="panel result-copy">
+          <h2 id="resultName">鹽酥雞</h2>
+          <div class="tagline" id="resultTagline"></div>
+          <div class="desc" id="resultDesc"></div>
+          <div class="trait-grid">
+            <div class="trait"><b>你最迷人的地方</b><span id="resultCharm"></span></div>
+            <div class="trait"><b>你容易翻車的地方</b><span id="resultBlind"></span></div>
+            <div class="trait"><b>適合你的朋友</b><span id="resultMatch"></span></div>
+            <div class="trait"><b>容易互相看不順眼</b><span id="resultClash"></span></div>
+          </div>
+          <div class="share-box" id="shareText"></div>
+          <div class="hero-actions">
+            <button class="primary-btn" id="copyBtn" type="button">複製結果</button>
+            <button class="ghost-btn" id="againBtn" type="button">再測一次</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="galleryScreen" class="screen">
+      <div class="panel gallery">
+        <div class="gallery-head">
+          <div>
+            <h2>32 種小吃人格圖鑑</h2>
+            <p>每一種都是人格隱喻，不是口味投票。</p>
+          </div>
+          <button class="primary-btn" id="galleryStart" type="button">開始測</button>
+        </div>
+        <div class="cards" id="cards"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast">已複製</div>
+
+  <script>
+    const axes = {
+      social: { plus: "外放", minus: "內收", plusCode: "O", minusCode: "I" },
+      polish: { plus: "精緻", minus: "粗放", plusCode: "Q", minusCode: "C" },
+      rhythm: { plus: "穩定", minus: "變化", plusCode: "S", minusCode: "V" },
+      force: { plus: "柔軟", minus: "強烈", plusCode: "M", minusCode: "K" },
+      energy: { plus: "勤快", minus: "懶散", plusCode: "A", minusCode: "L" }
+    };
+
+    const questions = [
+      {
+        axis: "social",
+        label: "外放 / 內收",
+        text: "朋友聚會冷掉三秒，你通常會怎樣？",
+        options: [
+          ["直接開話題，場子不能死在我面前", 2],
+          ["補幾句，讓氣氛不要太尷尬", 1],
+          ["安靜觀察，真的需要才出手", -1],
+          ["我先滑手機，這不是我的戰場", -2]
+        ]
+      },
+      {
+        axis: "polish",
+        label: "精緻 / 粗放",
+        text: "臨時有人要來你家，你第一個反應是？",
+        options: [
+          ["火速收拾，至少要看起來像人住的地方", 2],
+          ["把重點區域整理一下就好", 1],
+          ["亂有亂的秩序，客人會懂", -1],
+          ["來就來，我的人生沒有在遮", -2]
+        ]
+      },
+      {
+        axis: "rhythm",
+        label: "穩定 / 變化",
+        text: "你最舒服的生活節奏比較像？",
+        options: [
+          ["每天差不多，但心裡很安定", 2],
+          ["有固定骨架，偶爾換一點配料", 1],
+          ["想到什麼做什麼，保持新鮮", -1],
+          ["人生就是隨機事件連發才有趣", -2]
+        ]
+      },
+      {
+        axis: "force",
+        label: "柔軟 / 強烈",
+        text: "別人第一次認識你，最常感覺到？",
+        options: [
+          ["舒服、好親近、不太有壓力", 2],
+          ["禮貌但有自己的界線", 1],
+          ["很有個性，不一定好懂", -1],
+          ["存在感很重，喜不喜歡都會記得我", -2]
+        ]
+      },
+      {
+        axis: "energy",
+        label: "勤快 / 懶散",
+        text: "假日醒來沒有行程，你比較可能？",
+        options: [
+          ["把堆很久的事情一次處理掉", 2],
+          ["做一兩件正事，再開始放空", 1],
+          ["先躺，等等再說，等等通常不會來", -1],
+          ["睡醒吃，吃完躺，人生很完整", -2]
+        ]
+      },
+      {
+        axis: "social",
+        label: "外放 / 內收",
+        text: "你在群組裡比較像哪種人？",
+        options: [
+          ["丟梗、揪團、負責讓訊息動起來", 2],
+          ["有人 cue 我就會認真回", 1],
+          ["大部分潛水，但都有看到", -1],
+          ["通知關掉，重要的請私訊", -2]
+        ]
+      },
+      {
+        axis: "polish",
+        label: "精緻 / 粗放",
+        text: "出門前只剩十分鐘，你會？",
+        options: [
+          ["造型可以簡化，但不能崩壞", 2],
+          ["抓重點整理，看起來乾淨就好", 1],
+          ["套上能穿的就出門", -1],
+          ["帽子口罩一戴，世界自己適應我", -2]
+        ]
+      },
+      {
+        axis: "rhythm",
+        label: "穩定 / 變化",
+        text: "朋友臨時改計畫，你心裡會？",
+        options: [
+          ["不太舒服，我需要重新校準", 2],
+          ["可以，但要給我一點時間切換", 1],
+          ["也行，換個玩法而已", -1],
+          ["太好了，原本的我也膩了", -2]
+        ]
+      },
+      {
+        axis: "force",
+        label: "柔軟 / 強烈",
+        text: "被誤會時，你第一反應是？",
+        options: [
+          ["先解釋清楚，盡量不要傷感情", 2],
+          ["看對方態度，值得講再講", 1],
+          ["我會直接指出問題在哪", -1],
+          ["先開大，誰都別想亂定義我", -2]
+        ]
+      },
+      {
+        axis: "energy",
+        label: "勤快 / 懶散",
+        text: "你的待辦清單通常長什麼樣？",
+        options: [
+          ["分類、排序、完成就打勾", 2],
+          ["有寫幾個重點，大致跟著走", 1],
+          ["都在腦中，偶爾遺失一半", -1],
+          ["清單是什麼，壓線才是我的系統", -2]
+        ]
+      },
+      {
+        axis: "social",
+        label: "外放 / 內收",
+        text: "遇到新同事或新同學，你會？",
+        options: [
+          ["自然破冰，先讓大家沒那麼僵", 2],
+          ["友善回應，但不急著熟", 1],
+          ["等對方靠近，我慢慢判斷", -1],
+          ["能不社交就不社交，先保留體力", -2]
+        ]
+      },
+      {
+        axis: "polish",
+        label: "精緻 / 粗放",
+        text: "你對自己的形象管理比較像？",
+        options: [
+          ["細節要到位，我會在意別人感受", 2],
+          ["基本乾淨整齊，其他隨緣", 1],
+          ["舒服最重要，不必太包裝", -1],
+          ["我本人就是風格，粗糙也是風格", -2]
+        ]
+      },
+      {
+        axis: "rhythm",
+        label: "穩定 / 變化",
+        text: "你面對一份長期工作或關係時，比較像？",
+        options: [
+          ["慢慢投入，越久越穩", 2],
+          ["穩定中需要一些小更新", 1],
+          ["太固定會想逃，需要刺激", -1],
+          ["我需要自由，不然會枯掉", -2]
+        ]
+      },
+      {
+        axis: "force",
+        label: "柔軟 / 強烈",
+        text: "你的幽默感比較接近？",
+        options: [
+          ["溫和好笑，不太刺人", 2],
+          ["看場合，熟了會比較放", 1],
+          ["吐槽精準，有時候有點辣", -1],
+          ["黑色、荒謬、很容易嚇到新人", -2]
+        ]
+      },
+      {
+        axis: "energy",
+        label: "勤快 / 懶散",
+        text: "房間或桌面亂起來時，你會？",
+        options: [
+          ["看不下去，馬上整理", 2],
+          ["累積到一個程度再整理", 1],
+          ["只要找得到東西就不算亂", -1],
+          ["找不到也沒關係，改天它會出現", -2]
+        ]
+      },
+      {
+        axis: "social",
+        label: "外放 / 內收",
+        text: "你累到極限時，最想要的是？",
+        options: [
+          ["找人講話，把情緒倒出來", 2],
+          ["跟熟人待著，不一定要講很多", 1],
+          ["一個人安靜充電", -1],
+          ["世界暫停聯絡我，謝謝", -2]
+        ]
+      },
+      {
+        axis: "polish",
+        label: "精緻 / 粗放",
+        text: "做事情做到一半出現瑕疵，你會？",
+        options: [
+          ["重來，我不能接受那個破口", 2],
+          ["修到看不太出來就好", 1],
+          ["能用就行，完成比漂亮重要", -1],
+          ["瑕疵也是個性，先交出去再說", -2]
+        ]
+      },
+      {
+        axis: "rhythm",
+        label: "穩定 / 變化",
+        text: "你最怕別人說你？",
+        options: [
+          ["不可靠、說變就變", 2],
+          ["太無聊、沒有新意", -1],
+          ["沒主見、只會照舊", -2],
+          ["太難預測、讓人沒安全感", 1]
+        ]
+      },
+      {
+        axis: "force",
+        label: "柔軟 / 強烈",
+        text: "在團體裡出現衝突，你通常是？",
+        options: [
+          ["緩和氣氛的人", 2],
+          ["幫雙方翻譯的人", 1],
+          ["把核心問題講出來的人", -1],
+          ["乾脆點破，不想演和平", -2]
+        ]
+      },
+      {
+        axis: "energy",
+        label: "勤快 / 懶散",
+        text: "你對『等一下再做』的理解是？",
+        options: [
+          ["真的等一下就會做", 2],
+          ["今天之內應該會做", 1],
+          ["看壓力有沒有追上我", -1],
+          ["這句話主要是安撫現在的我", -2]
+        ]
+      }
+    ];
+
+    const snacks = [
+      ["OQSMA", "鹽酥雞", "你一出場，空氣就開始有味道。", "你熱、亮、有效率，會把一群人的精神拉起來。你不是安靜待著的配菜，而是讓大家突然想多坐一小時的那盤鹽酥雞。", "帶動氣氛快，行動力也快。", "太急著熱場，會忽略別人其實還在慢熟。"],
+      ["OQSML", "蔥油餅", "你看起來親切，實際上很有層次。", "你能跟很多人聊起來，也懂得讓自己看起來體面。只是你內心不一定想一直努力，有時候只想靠香氣過關。", "親切、靈活，懂得把日常變好吃。", "容易把懶散包成隨性，拖到最後才翻面。"],
+      ["OQSKA", "胡椒餅", "你外表規矩，內在很燙。", "你有組織、有目標，也很有存在感。別人以為你只是可靠，靠近才知道你裡面其實很有火。", "抗壓強，做事俐落，關鍵時刻很能扛。", "講話太直時，別人會被你的熱度燙到。"],
+      ["OQSKL", "雞排", "你很難低調，也不太想低調。", "你在意形象，也知道怎麼吸引目光，但骨子裡有點懶得維持完美。你常常看起來氣勢很足，實際上只想被好好放過。", "自帶主角感，讓人很難忽略。", "容易聲勢很大，後續整理很少。"],
+      ["OQVMA", "珍珠奶茶", "你是人群裡最會調甜度的人。", "你外向、精緻、適應力強，知道什麼場合該加糖，什麼時候要少冰。你不只是討喜，你其實很懂場面。", "人緣好，變通快，會照顧氣氛。", "太想順口，可能忘了自己原本的味道。"],
+      ["OQVML", "地瓜球", "你彈來彈去，但大家還是喜歡你。", "你活潑、可愛、點子多，常常把沉悶變得輕盈。只是你不太喜歡被責任壓住，壓力一來就想彈走。", "情緒彈性好，能把尷尬變輕。", "嚴肅問題面前容易裝沒事。"],
+      ["OQVKA", "花枝丸", "你看似圓滑，其實很有咬勁。", "你外放、精緻、反應快，能在不同圈子裡切換。你不一定尖銳，但該有態度時很有嚼感。", "社交聰明，遇到變化也不慌。", "太會轉彎，別人有時摸不到你的真心。"],
+      ["OQVKL", "炸湯圓", "你甜是甜，但不要小看你的爆點。", "你外表討喜，行動隨興，情緒來時很有衝擊力。平常像甜點，爆開時大家才發現你不是沒有脾氣。", "可愛、有記憶點，讓人想靠近。", "情緒累積太久，爆的時候會嚇到人。"],
+      ["OCSMA", "滷肉飯", "你不是浮誇的人，但你很能讓人安心。", "你外放但不花俏，務實、可靠、耐吃。你像每天都能出現的那碗飯，不一定搶鏡，卻很難被取代。", "穩定、照顧人，能把事情落地。", "容易把自己的辛苦當成理所當然。"],
+      ["OCSML", "蛋餅", "你日常、親切，而且很會陪人醒來。", "你不追求驚天動地，但能給人熟悉的安全感。你有點懶，有點軟，但在關係裡很耐待。", "好相處、不壓迫，讓人放鬆。", "太習慣舒服，會把成長一直延後。"],
+      ["OCSKA", "牛肉麵", "你厚實、直接，扛得住大場面。", "你粗放但可靠，有很強的生活重量。你不見得說很多漂亮話，但真的有事時，你會端出一碗很有底氣的東西。", "成熟、耐操，說到做到。", "有時候太硬，忘了別人需要柔軟入口。"],
+      ["OCSKL", "臭豆腐", "你不修飾，但懂的人會很愛。", "你強烈、粗放、懶散，第一印象不一定討喜。你有自己的氣味和節奏，不太為了別人改變，熟了才知道你其實很有層次。", "真實、不做作，活得很有自己的味。", "容易用「我就這樣」逃過基本整理和自我修正。"],
+      ["OCVMA", "大腸包小腸", "你很會把不搭的東西湊成熱鬧。", "你外放、粗放、變通快，也願意動手解決問題。你的人生不一定精緻，但總能用奇妙方式把場面接起來。", "接地氣、反應快，越忙越有辦法。", "太靠臨場感，事前準備常常失蹤。"],
+      ["OCVML", "烤玉米", "你有自己的節奏，慢慢烤才香。", "你外向但不精緻，喜歡自由和變化，懶得被流程綁死。你有時看起來慢，其實是在等自己入味。", "自在、有生命力，不容易被規訓。", "太相信順其自然，會錯過該翻面的時間。"],
+      ["OCVKA", "米血糕", "你很接地氣，也很有個性。", "你不怕別人覺得你重口味，做事乾脆，遇到變化能立刻上手。你不是精美路線，但你很有存在價值。", "直覺準、行動快，有街頭智慧。", "太憑直覺時，會讓細節一路掉屑。"],
+      ["OCVKL", "大腸麵線", "你看似混亂，實際上有自己的濃度。", "你熱絡、隨性、情緒濃，生活常常一團糊但也因此有人味。你不走清爽路線，喜歡你的人會覺得很暖。", "有溫度、有故事，能接住複雜場面。", "界線糊掉時，容易把別人的事也攪進來。"],
+      ["IQSMA", "豆花", "你安靜，但不是沒有存在感。", "你內收、精緻、穩定、柔軟，像一碗很乾淨的豆花。你不急著證明自己，靠近的人會感覺到你的細膩。", "溫和細心，能讓人慢慢放鬆。", "太怕打擾別人，自己的需求也跟著變小聲。"],
+      ["IQSML", "燒仙草", "你安靜地暖，懶得張揚。", "你穩定、柔軟，有點慢，有點懶，但很適合陪人度過冷掉的時刻。你不搶風頭，卻讓人覺得被照顧。", "陪伴感強，讓人有安全感。", "太常縮在舒適圈裡，會錯過被看見的機會。"],
+      ["IQSKA", "小籠包", "你精緻克制，裡面其實很滿。", "你內斂、講究、穩定，也有不容小看的強度。你不會隨便打開自己，但熟的人知道你心裡很有湯。", "細節控、可靠，情感深但不廉價。", "太會忍，最後可能一次燙傷關係。"],
+      ["IQSKL", "車輪餅", "你外殼完整，內餡常常懶得說。", "你看起來乖、穩、可預測，其實內在很有自己的固執。你不太想被打擾，也常把情緒悶在裡面慢慢降溫。", "穩定、有分寸，讓人感覺踏實。", "太少開口，別人只能猜你的內餡。"],
+      ["IQVMA", "芋圓", "你柔軟，但人生不能太無聊。", "你內收、精緻、喜歡變化，又不愛太刺眼。你有自己的小宇宙，慢熟之後會露出很有彈性的靈魂。", "細膩、有創意，情緒彈性佳。", "太常待在自己的世界，別人不一定追得上。"],
+      ["IQVML", "綠豆沙", "你看起來清爽，其實只是懶得解釋。", "你內向、柔軟、隨性，喜歡低壓生活。你不是沒有想法，只是很多時候覺得講太多很累。", "降溫能力強，能讓緊繃的人鬆下來。", "太會逃離壓力，該面對的事會沉到底。"],
+      ["IQVKA", "蚵仔煎", "你柔中帶黏，變化裡有主見。", "你安靜但不無聊，精緻但不死板。你可以包容很多狀況，也會在關鍵時刻展現自己的口感。", "能整合複雜資訊，適應力很好。", "太想把一切融合，會讓立場變得黏糊。"],
+      ["IQVKL", "麻糬", "你很軟，但不是很好拉扯。", "你內向、慢熱、隨性，外表溫和，裡面卻有很強的黏性和固執。你不喜歡被催，越催越變形。", "溫柔、有韌性，關係感很強。", "被逼太緊時會直接黏住不動。"],
+      ["ICSMA", "雞肉飯", "你低調實在，默默把日子顧好。", "你內收、粗放、穩定、柔軟，做事不誇張但很耐用。你不太需要掌聲，只希望生活有秩序地往前。", "可靠、務實，讓人放心交付。", "太低估自己，常把功勞讓給別人。"],
+      ["ICSML", "碗粿", "你慢慢的、厚厚的，很有生活感。", "你穩、懶、低調，喜歡熟悉的人事物。你不是難搞，只是需要時間加熱，也不想被逼著表現。", "踏實、耐待，越熟越讓人安心。", "太容易停在原地，忘記自己也能變好吃。"],
+      ["ICSKA", "肉圓", "你外表樸素，內在很有重量。", "你內斂、粗放、穩定、強烈，平常不多話，但你的堅持很厚。你不是精緻派，卻很有自己的硬底子。", "韌性強，承諾感重。", "固執起來很難入口，別人會不知道怎麼靠近。"],
+      ["ICSKL", "甜不辣", "你安靜散著，卻有一種固執的醬味。", "你不太包裝自己，也不急著變勤快。你習慣用自己的方式活著，熟悉的人會知道你其實很有底。", "自在、真誠，不為場面硬演。", "懶散加固執時，會讓人覺得溝通很卡。"],
+      ["ICVMA", "潤餅", "你安靜包很多，偶爾想換餡。", "你內向、務實、柔軟，也能接受變化。你不愛張揚，但擅長把複雜的東西收進一個能被理解的形狀。", "整合力好，情緒穩，會替人留空間。", "太常把事情往內包，久了會太滿。"],
+      ["ICVML", "刈包", "你軟軟包著世界，但其實很隨性。", "你低調、粗放、有彈性，也有點懶。你在人際裡常扮演包容者，但不代表你沒有自己的偏好。", "包容力強，讓人願意靠近。", "太常順著別人，最後自己也不知道要什麼。"],
+      ["ICVKA", "擔仔麵", "你小小一碗，但味道很明確。", "你內收、粗放、變化、強烈，話不一定多，但觀點有份量。你不需要很大陣仗，也能讓人記住。", "精準、有個性，低調但不薄弱。", "太習慣少量輸出，別人可能低估你的需求。"],
+      ["ICVKL", "魯味", "你什麼都能放進去，最後變成自己的味。", "你內向、粗放、懶散又有強烈個性。你的人生看起來有點雜，但每個選擇都被你用自己的方式滷過。", "包容複雜，真實、有生活智慧。", "太放任自己混在一起，界線和目標會變模糊。"]
+    ].map(([code, name, tagline, desc, charm, blind], index) => ({
+      code,
+      name,
+      index,
+      tagline,
+      desc,
+      charm,
+      blind
+    }));
+
+    const byCode = Object.fromEntries(snacks.map(item => [item.code, item]));
+    const state = {
+      index: 0,
+      answers: [],
+      scores: { social: 0, polish: 0, rhythm: 0, force: 0, energy: 0 }
+    };
+
+    const $ = selector => document.querySelector(selector);
+    const screens = ["startScreen", "quizScreen", "resultScreen", "galleryScreen"];
+
+    function showScreen(id) {
+      screens.forEach(screen => $("#" + screen).classList.toggle("active", screen === id));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function resetState() {
+      state.index = 0;
+      state.answers = [];
+      state.scores = { social: 0, polish: 0, rhythm: 0, force: 0, energy: 0 };
+      renderQuestion();
+    }
+
+    function beginQuiz() {
+      resetState();
+      showScreen("quizScreen");
+    }
+
+    function renderQuestion() {
+      const q = questions[state.index];
+      const answered = state.answers.length;
+      $("#questionAxis").textContent = q.label;
+      $("#questionNo").textContent = String(state.index + 1).padStart(2, "0");
+      $("#questionText").textContent = q.text;
+      $("#progressText").textContent = `第 ${Math.min(state.index + 1, questions.length)} / ${questions.length} 題`;
+      $("#meterFill").style.width = `${answered / questions.length * 100}%`;
+      $("#backBtn").disabled = state.index === 0;
+
+      const options = $("#options");
+      options.innerHTML = "";
+      q.options.forEach(([text, value], idx) => {
+        const button = document.createElement("button");
+        button.className = "option-btn";
+        button.type = "button";
+        button.innerHTML = `<span class="option-key">${idx + 1}</span><span>${text}</span>`;
+        button.addEventListener("click", () => choose(value));
+        options.appendChild(button);
+      });
+
+      renderDims();
+    }
+
+    function renderDims() {
+      const ids = {
+        social: "dimSocial",
+        polish: "dimPolish",
+        rhythm: "dimRhythm",
+        force: "dimForce",
+        energy: "dimEnergy"
+      };
+      Object.entries(ids).forEach(([axis, id]) => {
+        const score = state.scores[axis];
+        const def = axes[axis];
+        const label = score === 0 ? "--" : score > 0 ? def.plus : def.minus;
+        $("#" + id).textContent = label;
+      });
+    }
+
+    function choose(value) {
+      const q = questions[state.index];
+      state.answers[state.index] = { axis: q.axis, value };
+      recomputeScores();
+
+      if (state.index === questions.length - 1) {
+        $("#meterFill").style.width = "100%";
+        setTimeout(showResult, 180);
+        return;
+      }
+
+      state.index += 1;
+      renderQuestion();
+    }
+
+    function recomputeScores() {
+      state.scores = { social: 0, polish: 0, rhythm: 0, force: 0, energy: 0 };
+      state.answers.forEach(answer => {
+        if (answer) state.scores[answer.axis] += answer.value;
+      });
+    }
+
+    function makeCode() {
+      return Object.entries(axes)
+        .map(([axis, def]) => state.scores[axis] >= 0 ? def.plusCode : def.minusCode)
+        .join("");
+    }
+
+    function axisFlavor() {
+      return Object.entries(axes)
+        .map(([axis, def]) => state.scores[axis] >= 0 ? def.plus : def.minus)
+        .join("、");
+    }
+
+    function spriteStyle(index) {
+      const col = index % 8;
+      const row = Math.floor(index / 8);
+      const x = col === 7 ? 100 : Number((col / 7 * 100).toFixed(4));
+      const y = row === 3 ? 100 : Number((row / 3 * 100).toFixed(4));
+      return `--sprite-x:${x}%; --sprite-y:${y}%`;
+    }
+
+    function showResult() {
+      const code = makeCode();
+      const snack = byCode[code] || snacks[0];
+      const match = findRelative(code, 1);
+      const clash = findRelative(code, 5);
+
+      $("#resultSprite").setAttribute("style", spriteStyle(snack.index));
+      $("#resultCode").textContent = `${snack.code}｜${axisFlavor()}`;
+      $("#resultFlavor").textContent = "人格氣味";
+      $("#resultName").textContent = snack.name;
+      $("#resultTagline").textContent = snack.tagline;
+      $("#resultDesc").textContent = snack.desc;
+      $("#resultCharm").textContent = snack.charm;
+      $("#resultBlind").textContent = snack.blind;
+      $("#resultMatch").textContent = `${match.name}：氣質有一點相近，互相理解成本低。`;
+      $("#resultClash").textContent = `${clash.name}：你們看世界的方式差很多，但也可能互補。`;
+      $("#shareText").textContent = `我是「${snack.name}」：${snack.tagline}（${snack.code}）`;
+      showScreen("resultScreen");
+    }
+
+    function findRelative(code, distance) {
+      const target = snacks.find(item => hamming(item.code, code) === distance);
+      return target || snacks.find(item => item.code !== code) || snacks[0];
+    }
+
+    function hamming(a, b) {
+      return [...a].reduce((count, char, index) => count + (char === b[index] ? 0 : 1), 0);
+    }
+
+    function renderGallery() {
+      const cards = $("#cards");
+      cards.innerHTML = "";
+      snacks.forEach(snack => {
+        const card = document.createElement("article");
+        card.className = "mini-card";
+        card.innerHTML = `
+          <div class="mini-top">
+            <span>${snack.name}</span>
+            <span class="sprite-icon mini-emoji" style="${spriteStyle(snack.index)}"></span>
+          </div>
+          <small>${snack.code}</small>
+          <small>${snack.tagline}</small>
+        `;
+        cards.appendChild(card);
+      });
+    }
+
+    async function copyResult() {
+      const text = $("#shareText").textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (error) {
+        const area = document.createElement("textarea");
+        area.value = text;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        area.remove();
+      }
+      showToast("已複製結果");
+    }
+
+    function showToast(text) {
+      const toast = $("#toast");
+      toast.textContent = text;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 1600);
+    }
+
+    $("#startBtn").addEventListener("click", beginQuiz);
+    $("#galleryStart").addEventListener("click", beginQuiz);
+    $("#againBtn").addEventListener("click", beginQuiz);
+    $("#navRestart").addEventListener("click", beginQuiz);
+    $("#peekBtn").addEventListener("click", () => showScreen("galleryScreen"));
+    $("#navGallery").addEventListener("click", () => showScreen("galleryScreen"));
+    $("#copyBtn").addEventListener("click", copyResult);
+    $("#clearBtn").addEventListener("click", beginQuiz);
+    $("#backBtn").addEventListener("click", () => {
+      if (state.index === 0) return;
+      state.answers[state.index] = undefined;
+      state.index -= 1;
+      state.answers[state.index] = undefined;
+      recomputeScores();
+      renderQuestion();
+    });
+
+    window.addEventListener("keydown", event => {
+      if (!$("#quizScreen").classList.contains("active")) return;
+      const num = Number(event.key);
+      if (!num || num < 1 || num > 4) return;
+      const q = questions[state.index];
+      if (q.options[num - 1]) choose(q.options[num - 1][1]);
+    });
+
+    renderGallery();
+    renderQuestion();
+  </script>
+</body>
+</html>
