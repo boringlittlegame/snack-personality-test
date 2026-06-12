@@ -254,17 +254,14 @@
       overflow: hidden;
     }
 
-    .sprite-icon {
+    .snack-img {
       display: block;
       width: 100%;
       height: 100%;
-      background-image: url("assets/snack-spritesheet.png");
-      background-size: 800% 400%;
-      background-position: var(--sprite-x) var(--sprite-y);
-      background-repeat: no-repeat;
+      object-fit: contain;
     }
 
-    .snack-tile .sprite-icon {
+    .snack-tile .snack-img {
       width: 92%;
       height: 92%;
       border-radius: 6px;
@@ -437,44 +434,25 @@
       min-height: 560px;
       position: relative;
       overflow: hidden;
-      background:
-        radial-gradient(circle at 50% 42%, rgba(255,255,255,.95), rgba(255,255,255,.25) 34%, transparent 35%),
-        linear-gradient(145deg, #fbd16d, #f08c54 52%, #d84a2b);
+      background: #fff4d4;
     }
 
     .plate {
       position: absolute;
-      width: min(390px, calc(100% - 58px));
+      width: min(430px, calc(100% - 46px));
       aspect-ratio: 1;
       left: 50%;
       top: 48%;
       transform: translate(-50%, -50%);
-      border: 3px solid var(--line);
-      border-radius: 50%;
-      background: #fff9ec;
-      box-shadow: 8px 8px 0 var(--line);
       display: grid;
       place-items: center;
     }
 
-    .plate::after {
-      content: "";
-      position: absolute;
-      inset: 10%;
-      border: 2px solid rgba(32, 24, 22, .18);
-      border-radius: 50%;
-      pointer-events: none;
-    }
-
     .result-sprite {
-      width: 84%;
-      height: 84%;
-      border: 3px solid var(--line);
-      border-radius: 8px;
-      background-color: #fffaf0;
-      box-shadow: 5px 5px 0 rgba(32,24,22,.28);
-      filter: drop-shadow(4px 6px 0 rgba(32,24,22,.25));
-      z-index: 1;
+      width: 100%;
+      height: 100%;
+      border-radius: 4px;
+      background-color: #fff4d4;
     }
 
     .code-ticket {
@@ -712,11 +690,7 @@
         grid-template-columns: 1fr;
       }
       .plate {
-        width: min(300px, calc(100% - 42px));
-      }
-      .result-sprite {
-        width: 86%;
-        height: 86%;
+        width: min(310px, calc(100% - 32px));
       }
       .code-ticket {
         flex-direction: column;
@@ -758,14 +732,14 @@
           </div>
           <div class="signboard">人格小吃攤</div>
           <div class="snack-grid">
-            <div class="snack-tile" style="--r:-4deg"><span class="sprite-icon" style="--sprite-x:0%; --sprite-y:0%"></span></div>
-            <div class="snack-tile" style="--r:3deg"><span class="sprite-icon" style="--sprite-x:14.2857%; --sprite-y:0%"></span></div>
-            <div class="snack-tile" style="--r:-2deg"><span class="sprite-icon" style="--sprite-x:28.5714%; --sprite-y:0%"></span></div>
-            <div class="snack-tile" style="--r:4deg"><span class="sprite-icon" style="--sprite-x:42.8571%; --sprite-y:0%"></span></div>
-            <div class="snack-tile" style="--r:2deg"><span class="sprite-icon" style="--sprite-x:57.1429%; --sprite-y:0%"></span></div>
-            <div class="snack-tile" style="--r:-3deg"><span class="sprite-icon" style="--sprite-x:71.4286%; --sprite-y:0%"></span></div>
-            <div class="snack-tile" style="--r:4deg"><span class="sprite-icon" style="--sprite-x:85.7143%; --sprite-y:0%"></span></div>
-            <div class="snack-tile" style="--r:-5deg"><span class="sprite-icon" style="--sprite-x:100%; --sprite-y:0%"></span></div>
+            <div class="snack-tile" style="--r:-4deg"><img class="snack-img" src="assets/snacks/01-popcorn-chicken.png" alt="" /></div>
+            <div class="snack-tile" style="--r:3deg"><img class="snack-img" src="assets/snacks/02-scallion-pancake.png" alt="" /></div>
+            <div class="snack-tile" style="--r:-2deg"><img class="snack-img" src="assets/snacks/05-bubble-tea.png" alt="" /></div>
+            <div class="snack-tile" style="--r:4deg"><img class="snack-img" src="assets/snacks/19-soup-dumplings.png" alt="" /></div>
+            <div class="snack-tile" style="--r:2deg"><img class="snack-img" src="assets/snacks/11-beef-noodle.png" alt="" /></div>
+            <div class="snack-tile" style="--r:-3deg"><img class="snack-img" src="assets/snacks/10-egg-pancake.png" alt="" /></div>
+            <div class="snack-tile" style="--r:4deg"><img class="snack-img" src="assets/snacks/24-mochi.png" alt="" /></div>
+            <div class="snack-tile" style="--r:-5deg"><img class="snack-img" src="assets/snacks/14-grilled-corn.png" alt="" /></div>
           </div>
           <div class="counter"></div>
         </div>
@@ -808,7 +782,7 @@
       <div class="result-layout">
         <div class="panel result-art">
           <div class="plate">
-            <div class="sprite-icon result-sprite" id="resultSprite"></div>
+            <img class="snack-img result-sprite" id="resultImage" src="assets/snacks/01-popcorn-chicken.png" alt="" />
           </div>
           <div class="code-ticket">
             <span id="resultCode">CODE</span>
@@ -1119,6 +1093,16 @@
       code,
       name,
       index,
+      image: `assets/snacks/${String(index + 1).padStart(2, "0")}-${[
+        "popcorn-chicken","scallion-pancake","pepper-bun","fried-chicken-cutlet",
+        "bubble-tea","sweet-potato-balls","cuttlefish-ball","fried-tangyuan",
+        "braised-pork-rice","egg-pancake","beef-noodle","stinky-tofu",
+        "sausage-sticky-rice","grilled-corn","pig-blood-cake","oyster-vermicelli",
+        "tofu-pudding","hot-grass-jelly","soup-dumplings","wheel-cake",
+        "taro-balls","mung-bean-smoothie","oyster-omelet","mochi",
+        "chicken-rice","bowl-rice-cake","ba-wan","tempura-oden",
+        "run-bing","gua-bao","danzai-noodles","luwei"
+      ][index]}.png`,
       tagline,
       desc,
       charm,
@@ -1226,21 +1210,14 @@
         .join("、");
     }
 
-    function spriteStyle(index) {
-      const col = index % 8;
-      const row = Math.floor(index / 8);
-      const x = col === 7 ? 100 : Number((col / 7 * 100).toFixed(4));
-      const y = row === 3 ? 100 : Number((row / 3 * 100).toFixed(4));
-      return `--sprite-x:${x}%; --sprite-y:${y}%`;
-    }
-
     function showResult() {
       const code = makeCode();
       const snack = byCode[code] || snacks[0];
       const match = findRelative(code, 1);
       const clash = findRelative(code, 5);
 
-      $("#resultSprite").setAttribute("style", spriteStyle(snack.index));
+      $("#resultImage").src = snack.image;
+      $("#resultImage").alt = snack.name;
       $("#resultCode").textContent = `${snack.code}｜${axisFlavor()}`;
       $("#resultFlavor").textContent = "人格氣味";
       $("#resultName").textContent = snack.name;
@@ -1272,7 +1249,7 @@
         card.innerHTML = `
           <div class="mini-top">
             <span>${snack.name}</span>
-            <span class="sprite-icon mini-emoji" style="${spriteStyle(snack.index)}"></span>
+            <img class="snack-img mini-emoji" src="${snack.image}" alt="${snack.name}" />
           </div>
           <small>${snack.code}</small>
           <small>${snack.tagline}</small>
