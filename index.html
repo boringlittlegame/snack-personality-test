@@ -644,7 +644,28 @@
 
       .snack-tile { font-size: 28px; }
       .receipt { position: static; min-height: auto; }
-      .result-art { min-height: 430px; }
+      .result-art {
+        min-height: 0;
+        padding: 22px 16px 18px;
+        display: grid;
+        gap: 14px;
+      }
+      .result-art .plate {
+        position: relative;
+        left: auto;
+        top: auto;
+        transform: none;
+        width: min(320px, 72vw);
+        margin: 0 auto;
+      }
+      .result-art .code-ticket {
+        position: relative;
+        left: auto;
+        right: auto;
+        bottom: auto;
+        width: min(100%, 520px);
+        margin: 0 auto;
+      }
       .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
@@ -688,9 +709,6 @@
       .trait-grid,
       .cards {
         grid-template-columns: 1fr;
-      }
-      .plate {
-        width: min(310px, calc(100% - 32px));
       }
       .code-ticket {
         flex-direction: column;
