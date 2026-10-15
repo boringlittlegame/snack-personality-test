@@ -683,6 +683,46 @@
     }
     .mini-card small { color: var(--muted); font-weight: 850; }
 
+    .zhuyin-gallery-tools {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .zhuyin-search {
+      width: min(260px, 32vw);
+      min-height: 42px;
+      padding: 8px 12px;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: #fffdf7;
+      color: var(--ink);
+      font: inherit;
+    }
+
+    .zhuyin-term-card { align-content: start; }
+    .zhuyin-term { margin: 0; font-size: 22px; font-weight: 950; }
+
+    .zhuyin-readings {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .zhuyin-reading {
+      min-width: 44px;
+      padding: 6px 8px;
+      display: grid;
+      justify-items: center;
+      border: 1px solid rgba(32,24,22,.55);
+      border-radius: 6px;
+      background: #fff4d7;
+    }
+
+    .zhuyin-reading span { font-size: 20px; font-weight: 950; }
+    .zhuyin-reading small { color: var(--muted); font-weight: 800; }
+    .zhuyin-empty { grid-column: 1 / -1; color: var(--muted); font-weight: 800; }
+
     .toast {
       position: fixed;
       left: 50%;
@@ -806,6 +846,9 @@
       .cards {
         grid-template-columns: 1fr;
       }
+      .gallery-head { align-items: stretch; flex-direction: column; }
+      .zhuyin-gallery-tools { width: 100%; flex-direction: column; align-items: stretch; }
+      .zhuyin-search { width: 100%; }
       .code-ticket {
         flex-direction: column;
       }
@@ -819,12 +862,13 @@
         <div class="brand-mark">玩</div>
         <div>
           <div>遊戲選單</div>
-          <small>挑一款，開始玩</small>
+          <small>選擇一款遊戲開始</small>
         </div>
       </div>
       <div class="nav-pill">
         <button class="ghost-btn" id="navHome" type="button">遊戲首頁</button>
         <button class="ghost-btn" id="navGallery" type="button">看小吃圖鑑</button>
+        <button class="ghost-btn" id="navZhuyinGallery" type="button">看注音題庫</button>
       </div>
     </header>
 
@@ -844,7 +888,10 @@
               <b aria-hidden="true">ㄅ</b>
             </button>
           </div>
-          <button class="ghost-btn" id="peekBtn" type="button">瀏覽小吃圖鑑</button>
+          <div class="hero-actions">
+            <button class="ghost-btn" id="peekBtn" type="button">瀏覽小吃圖鑑</button>
+            <button class="ghost-btn" id="peekZhuyinBtn" type="button">瀏覽注音題庫</button>
+          </div>
         </div>
 
         <div class="game-showcase" aria-hidden="true">
@@ -938,6 +985,22 @@
           <button class="primary-btn" id="galleryStart" type="button">開始測</button>
         </div>
         <div class="cards" id="cards"></div>
+      </div>
+    </section>
+
+    <section id="zhuyinGalleryScreen" class="screen">
+      <div class="panel gallery">
+        <div class="gallery-head">
+          <div>
+            <h2>注音題庫</h2>
+            <p id="zhuyinGalleryCount"></p>
+          </div>
+          <div class="zhuyin-gallery-tools">
+            <input class="zhuyin-search" id="zhuyinSearch" type="search" placeholder="搜尋詞彙、單字或注音" aria-label="搜尋注音題庫" />
+            <button class="primary-btn" id="zhuyinGalleryStart" type="button">開始練習</button>
+          </div>
+        </div>
+        <div class="cards" id="zhuyinCards"></div>
       </div>
     </section>
 
@@ -1344,7 +1407,7 @@
     const zhuyinState = { questions: [], index: 0, score: 0, answered: false };
 
     const $ = selector => document.querySelector(selector);
-    const screens = ["startScreen", "quizScreen", "resultScreen", "galleryScreen", "zhuyinScreen"];
+    const screens = ["startScreen", "quizScreen", "resultScreen", "galleryScreen", "zhuyinGalleryScreen", "zhuyinScreen"];
 
     function showScreen(id) {
       screens.forEach(screen => $("#" + screen).classList.toggle("active", screen === id));
@@ -1562,6 +1625,53 @@
       });
     }
 
+    function renderZhuyinGallery(searchTerm = "") {
+      const grouped = new Map();
+      zhuyinItems.forEach(item => {
+        if (!grouped.has(item.word)) grouped.set(item.word, []);
+        grouped.get(item.word).push(item);
+      });
+
+      const query = searchTerm.trim().toLocaleLowerCase();
+      const matches = [...grouped.entries()].filter(([word, entries]) => {
+        const searchable = `${word} ${entries.map(({ target, zhuyin }) => `${target} ${zhuyin}`).join(" ")}`;
+        return searchable.toLocaleLowerCase().includes(query);
+      });
+      $("#zhuyinGalleryCount").textContent = `共 ${grouped.size} 組詞彙、${zhuyinItems.length} 個字音${query ? `，找到 ${matches.length} 組` : ""}`;
+
+      const cards = $("#zhuyinCards");
+      cards.innerHTML = "";
+      if (!matches.length) {
+        const empty = document.createElement("p");
+        empty.className = "zhuyin-empty";
+        empty.textContent = "找不到符合的詞彙或注音。";
+        cards.appendChild(empty);
+        return;
+      }
+
+      matches.forEach(([word, entries]) => {
+        const card = document.createElement("article");
+        card.className = "mini-card zhuyin-term-card";
+        const title = document.createElement("h3");
+        title.className = "zhuyin-term";
+        title.textContent = word;
+        const readings = document.createElement("div");
+        readings.className = "zhuyin-readings";
+        entries.forEach(({ target, zhuyin }) => {
+          const reading = document.createElement("div");
+          reading.className = "zhuyin-reading";
+          const character = document.createElement("span");
+          character.textContent = target;
+          const pronunciation = document.createElement("small");
+          pronunciation.textContent = zhuyin;
+          reading.append(character, pronunciation);
+          readings.appendChild(reading);
+        });
+        card.append(title, readings);
+        cards.appendChild(card);
+      });
+    }
+
     async function copyResult() {
       const text = $("#shareText").textContent;
       try {
@@ -1590,6 +1700,18 @@
     $("#againBtn").addEventListener("click", beginQuiz);
     $("#navHome").addEventListener("click", () => showScreen("startScreen"));
     $("#zhuyinStartBtn").addEventListener("click", beginZhuyin);
+    $("#zhuyinGalleryStart").addEventListener("click", beginZhuyin);
+    $("#peekZhuyinBtn").addEventListener("click", () => {
+      $("#zhuyinSearch").value = "";
+      renderZhuyinGallery();
+      showScreen("zhuyinGalleryScreen");
+    });
+    $("#navZhuyinGallery").addEventListener("click", () => {
+      $("#zhuyinSearch").value = "";
+      renderZhuyinGallery();
+      showScreen("zhuyinGalleryScreen");
+    });
+    $("#zhuyinSearch").addEventListener("input", event => renderZhuyinGallery(event.target.value));
     $("#zhuyinNextBtn").addEventListener("click", nextZhuyinQuestion);
     $("#zhuyinHomeBtn").addEventListener("click", () => showScreen("startScreen"));
     $("#zhuyinDoneHomeBtn").addEventListener("click", () => showScreen("startScreen"));
@@ -1617,6 +1739,7 @@
 
     $("#zhuyinBankInfo").textContent = `從 ${zhuyinItems.length} 題題庫隨機抽 10 題，選出正確注音，答對累積分數！`;
     renderGallery();
+    renderZhuyinGallery();
     renderQuestion();
   </script>
 </body>
