@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>你是什麼小吃</title>
+  <title>遊戲選單｜小吃測驗與注音快手</title>
   <style>
     :root {
       color-scheme: light;
@@ -194,64 +194,194 @@
       font-size: 18px;
     }
 
-    .stall {
-      position: relative;
+    .game-picker {
+      display: grid;
+      gap: 12px;
+      max-width: 520px;
+      margin-bottom: 14px;
+    }
+
+    .game-choice {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      width: 100%;
+      min-height: 84px;
+      padding: 16px 18px;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+      box-shadow: 4px 4px 0 var(--line);
+      text-align: left;
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+    .game-choice:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--line);
+    }
+
+    .game-choice strong,
+    .game-choice small { display: block; }
+    .game-choice strong { font-size: 20px; }
+    .game-choice small { margin-top: 5px; color: var(--muted); font-weight: 750; }
+    .game-choice b { font-size: 30px; color: var(--red); }
+
+    .game-shell {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: clamp(22px, 5vw, 42px);
+    }
+
+    .game-heading { margin-bottom: 24px; }
+    .game-heading h1 { font-size: clamp(34px, 6vw, 58px); margin: 0 0 8px; }
+    .game-heading p { margin: 0; color: var(--muted); font-weight: 750; line-height: 1.6; }
+
+    .zhuyin-status {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 22px;
+      font-weight: 900;
+    }
+
+    .zhuyin-prompt {
+      padding: 22px;
+      border: 2px dashed var(--line);
+      border-radius: 8px;
+      background: #fff4d7;
+      text-align: center;
+    }
+
+    .zhuyin-prompt small { color: var(--muted); font-weight: 850; }
+    .zhuyin-word { margin: 8px 0 0; font-size: clamp(34px, 7vw, 56px); font-weight: 950; }
+    .zhuyin-word mark { padding: 0 4px; background: var(--yellow); color: inherit; }
+
+    .zhuyin-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .zhuyin-option {
+      min-height: 72px;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+      box-shadow: 3px 3px 0 var(--line);
+      font-size: 28px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .zhuyin-option:hover:not(:disabled) { transform: translateY(-2px); }
+    .zhuyin-option:disabled { cursor: default; }
+    .zhuyin-option.correct { background: #9ad8b7; }
+    .zhuyin-option.incorrect { background: #f6a2bd; }
+
+    .zhuyin-feedback {
+      min-height: 30px;
+      margin: 0 0 14px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .zhuyin-result { text-align: center; }
+    .zhuyin-score { margin: 18px 0 8px; font-size: clamp(52px, 10vw, 86px); line-height: 1; font-weight: 950; color: var(--green); }
+
+    @media (max-width: 520px) {
+      .game-choice { min-height: 76px; }
+      .game-choice strong { font-size: 18px; }
+      .zhuyin-options { grid-template-columns: 1fr 1fr; }
+      .zhuyin-option { min-height: 64px; font-size: 24px; }
+    }
+
+    .game-showcase {
       min-height: 560px;
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 22px;
       border: 3px solid var(--line);
       border-radius: 8px;
-      background: linear-gradient(#fff8e8 0 34%, #f8e5bb 34% 100%);
+      background-color: #dceee6;
+      background-image: radial-gradient(rgba(32,24,22,.16) 1px, transparent 1px);
+      background-size: 18px 18px;
       box-shadow: var(--shadow), 8px 8px 0 var(--line);
       overflow: hidden;
     }
 
-    .awning {
-      height: 86px;
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      border-bottom: 3px solid var(--line);
+    .showcase-top,
+    .showcase-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: 0;
     }
 
-    .awning span:nth-child(odd) { background: var(--red); }
-    .awning span:nth-child(even) { background: #fff6e4; }
+    .showcase-top span:first-child {
+      padding: 7px 10px;
+      border: 2px solid var(--line);
+      border-radius: 999px;
+      background: var(--yellow);
+    }
 
-    .signboard {
-      position: absolute;
-      top: 30px;
-      left: 50%;
-      transform: translateX(-50%) rotate(2deg);
-      width: min(330px, calc(100% - 42px));
-      text-align: center;
+    .showcase-stage {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      align-items: center;
+    }
+
+    .showcase-game {
+      min-height: 300px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       border: 3px solid var(--line);
       border-radius: 8px;
-      background: var(--green);
-      color: #fff;
-      padding: 12px;
       box-shadow: 5px 5px 0 var(--line);
+    }
+
+    .showcase-game:first-child {
+      background: var(--red);
+      color: #fffaf0;
+      transform: rotate(-4deg);
+    }
+
+    .showcase-game:last-child {
+      background: var(--blue);
+      color: #fffaf0;
+      transform: rotate(4deg);
+    }
+
+    .showcase-index {
+      font-size: 13px;
       font-weight: 950;
-      font-size: 28px;
-      z-index: 2;
     }
 
-    .snack-grid {
-      position: absolute;
-      left: 28px;
-      right: 28px;
-      top: 135px;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
+    .showcase-symbol {
+      align-self: center;
+      font-size: clamp(74px, 10vw, 124px);
+      font-weight: 950;
+      line-height: 1;
     }
 
-    .snack-tile {
-      aspect-ratio: 1;
-      display: grid;
-      place-items: center;
-      border: 2px solid var(--line);
-      border-radius: 8px;
-      background: #fffaf0;
-      box-shadow: 3px 3px 0 var(--line);
-      transform: rotate(var(--r));
-      overflow: hidden;
+    .showcase-game strong {
+      font-size: clamp(16px, 2vw, 21px);
+    }
+
+    .showcase-bottom {
+      padding-top: 16px;
+      border-top: 2px solid rgba(32,24,22,.35);
     }
 
     .snack-img {
@@ -260,40 +390,6 @@
       height: 100%;
       object-fit: contain;
     }
-
-    .snack-tile .snack-img {
-      width: 92%;
-      height: 92%;
-      border-radius: 6px;
-    }
-
-    .counter {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 120px;
-      border-top: 3px solid var(--line);
-      background:
-        linear-gradient(90deg, rgba(32,24,22,.08) 1px, transparent 1px) 0 0 / 24px 100%,
-        #c98546;
-    }
-
-    .counter::before,
-    .counter::after {
-      content: "";
-      position: absolute;
-      bottom: 38px;
-      width: 82px;
-      height: 34px;
-      border: 2px solid var(--line);
-      border-radius: 999px;
-      background: #fff6e4;
-      box-shadow: 3px 3px 0 var(--line);
-    }
-
-    .counter::before { left: 54px; }
-    .counter::after { right: 54px; }
 
     .panel {
       border: 3px solid var(--line);
@@ -630,19 +726,12 @@
         min-height: 0;
       }
 
-      .stall {
-        min-height: 450px;
+      .game-showcase {
+        min-height: 440px;
         order: -1;
       }
 
-      .snack-grid {
-        grid-template-columns: repeat(4, 1fr);
-        left: 16px;
-        right: 16px;
-        gap: 8px;
-      }
-
-      .snack-tile { font-size: 28px; }
+      .showcase-game { min-height: 250px; }
       .receipt { position: static; min-height: auto; }
       .result-art {
         min-height: 0;
@@ -691,11 +780,18 @@
         width: 100%;
       }
 
-      .stall { min-height: 380px; }
-      .signboard { font-size: 22px; }
-      .counter { height: 88px; }
-      .counter::before,
-      .counter::after { display: none; }
+      .game-showcase {
+        min-height: 340px;
+        padding: 16px;
+        gap: 16px;
+      }
+      .showcase-stage { gap: 10px; }
+      .showcase-game {
+        min-height: 210px;
+        padding: 12px;
+      }
+      .showcase-symbol { font-size: 72px; }
+      .showcase-bottom { font-size: 10px; }
       .question-card h2 { font-size: 28px; }
       .option-btn {
         min-height: 74px;
@@ -720,46 +816,52 @@
   <main class="app">
     <header class="topbar">
       <div class="brand">
-        <div class="brand-mark">食</div>
+        <div class="brand-mark">玩</div>
         <div>
-          <div>你是什麼小吃</div>
-          <small>32 型小吃格</small>
+          <div>遊戲選單</div>
+          <small>挑一款，開始玩</small>
         </div>
       </div>
       <div class="nav-pill">
+        <button class="ghost-btn" id="navHome" type="button">遊戲首頁</button>
         <button class="ghost-btn" id="navGallery" type="button">看小吃圖鑑</button>
-        <button class="ghost-btn" id="navRestart" type="button">重新開始</button>
       </div>
     </header>
 
     <section id="startScreen" class="screen active">
       <div class="hero">
         <div class="title-wrap">
-          <div class="stamp">32 種小吃</div>
-          <h1>你是什麼小吃？</h1>
-          <p class="subtitle">總共 20 題</p>
-          <div class="hero-actions">
-            <button class="primary-btn" id="startBtn" type="button">開始測驗</button>
-            <button class="ghost-btn" id="peekBtn" type="button">先偷看圖鑑</button>
+          <div class="stamp">兩款小遊戲</div>
+          <h1>今天想玩哪一款？</h1>
+          <p class="subtitle">測出你的靈魂小吃，或來挑戰注音小測驗。</p>
+          <div class="game-picker">
+            <button class="game-choice" id="startBtn" type="button">
+              <span><strong>你是什麼小吃？</strong><small>20 題測出你的專屬小吃人格</small></span>
+              <b aria-hidden="true">→</b>
+            </button>
+            <button class="game-choice" id="zhuyinStartBtn" type="button">
+              <span><strong>注音快手</strong><small>看國字選注音，10 題一回合</small></span>
+              <b aria-hidden="true">ㄅ</b>
+            </button>
           </div>
+          <button class="ghost-btn" id="peekBtn" type="button">瀏覽小吃圖鑑</button>
         </div>
 
-        <div class="stall" aria-hidden="true">
-          <div class="awning">
-            <span></span><span></span><span></span><span></span><span></span><span></span>
+        <div class="game-showcase" aria-hidden="true">
+          <div class="showcase-top"><span>GAME SELECT</span><span>VOL. 01</span></div>
+          <div class="showcase-stage">
+            <div class="showcase-game">
+              <span class="showcase-index">01 / PERSONALITY</span>
+              <span class="showcase-symbol">?</span>
+              <strong>你是什麼小吃？</strong>
+            </div>
+            <div class="showcase-game">
+              <span class="showcase-index">02 / LANGUAGE</span>
+              <span class="showcase-symbol">ㄅ</span>
+              <strong>注音快手</strong>
+            </div>
           </div>
-          <div class="signboard">人格小吃攤</div>
-          <div class="snack-grid">
-            <div class="snack-tile" style="--r:-4deg"><img class="snack-img" src="assets/snacks/01-popcorn-chicken.png" alt="" /></div>
-            <div class="snack-tile" style="--r:3deg"><img class="snack-img" src="assets/snacks/02-scallion-pancake.png" alt="" /></div>
-            <div class="snack-tile" style="--r:-2deg"><img class="snack-img" src="assets/snacks/05-bubble-tea.png" alt="" /></div>
-            <div class="snack-tile" style="--r:4deg"><img class="snack-img" src="assets/snacks/19-soup-dumplings.png" alt="" /></div>
-            <div class="snack-tile" style="--r:2deg"><img class="snack-img" src="assets/snacks/11-beef-noodle.png" alt="" /></div>
-            <div class="snack-tile" style="--r:-3deg"><img class="snack-img" src="assets/snacks/10-egg-pancake.png" alt="" /></div>
-            <div class="snack-tile" style="--r:4deg"><img class="snack-img" src="assets/snacks/24-mochi.png" alt="" /></div>
-            <div class="snack-tile" style="--r:-5deg"><img class="snack-img" src="assets/snacks/14-grilled-corn.png" alt="" /></div>
-          </div>
-          <div class="counter"></div>
+          <div class="showcase-bottom"><span>CHOOSE YOUR NEXT GAME</span><span>2 GAMES</span></div>
         </div>
       </div>
     </section>
@@ -837,6 +939,43 @@
         </div>
         <div class="cards" id="cards"></div>
       </div>
+    </section>
+
+    <section id="zhuyinScreen" class="screen">
+      <article class="panel game-shell">
+        <div class="game-heading">
+          <div class="stamp">注音練習</div>
+          <h1>注音快手</h1>
+          <p id="zhuyinBankInfo">從題庫隨機抽 10 題，選出正確注音，答對累積分數！</p>
+        </div>
+        <div id="zhuyinPlay">
+          <div class="zhuyin-status">
+            <span id="zhuyinProgress">第 1 / 10 題</span>
+            <span>答對 <strong id="zhuyinScore">0</strong></span>
+          </div>
+          <div class="meter" aria-label="注音練習進度"><div class="meter-fill" id="zhuyinMeter"></div></div>
+          <div class="zhuyin-prompt">
+            <small>請選出「<span id="zhuyinTarget"></span>」的注音</small>
+            <div class="zhuyin-word" id="zhuyinWord"></div>
+          </div>
+          <div class="zhuyin-options" id="zhuyinOptions"></div>
+          <p class="zhuyin-feedback" id="zhuyinFeedback" aria-live="polite"></p>
+          <div class="quiz-actions">
+            <button class="ghost-btn" id="zhuyinHomeBtn" type="button">回遊戲首頁</button>
+            <button class="primary-btn" id="zhuyinNextBtn" type="button" disabled>下一題</button>
+          </div>
+        </div>
+        <div id="zhuyinDone" class="zhuyin-result" hidden>
+          <div class="stamp">本回合完成</div>
+          <h2>注音練習成績</h2>
+          <div class="zhuyin-score"><span id="zhuyinFinalScore">0</span><small> / 10</small></div>
+          <p id="zhuyinResultText"></p>
+          <div class="hero-actions" style="justify-content:center">
+            <button class="primary-btn" id="zhuyinReplayBtn" type="button">再玩一回</button>
+            <button class="ghost-btn" id="zhuyinDoneHomeBtn" type="button">回遊戲首頁</button>
+          </div>
+        </div>
+      </article>
     </section>
   </main>
 
@@ -1128,14 +1267,84 @@
     }));
 
     const byCode = Object.fromEntries(snacks.map(item => [item.code, item]));
+    const zhuyinItems = [
+      ["蘋果", "蘋", "ㄆㄧㄥˊ"], ["蘋果", "果", "ㄍㄨㄛˇ"],
+      ["香蕉", "香", "ㄒㄧㄤ"], ["香蕉", "蕉", "ㄐㄧㄠ"],
+      ["葡萄", "葡", "ㄆㄨˊ"], ["葡萄", "萄", "ㄊㄠˊ"],
+      ["西瓜", "西", "ㄒㄧ"], ["西瓜", "瓜", "ㄍㄨㄚ"],
+      ["草莓", "草", "ㄘㄠˇ"], ["草莓", "莓", "ㄇㄟˊ"],
+      ["學校", "學", "ㄒㄩㄝˊ"], ["學校", "校", "ㄒㄧㄠˋ"],
+      ["老師", "老", "ㄌㄠˇ"], ["老師", "師", "ㄕ"],
+      ["朋友", "朋", "ㄆㄥˊ"], ["朋友", "友", "ㄧㄡˇ"],
+      ["今天", "今", "ㄐㄧㄣ"], ["今天", "天", "ㄊㄧㄢ"],
+      ["快樂", "快", "ㄎㄨㄞˋ"], ["快樂", "樂", "ㄌㄜˋ"],
+      ["注音", "注", "ㄓㄨˋ"], ["注音", "音", "ㄧㄣ"],
+      ["台灣", "台", "ㄊㄞˊ"], ["台灣", "灣", "ㄨㄢ"],
+      ["書包", "書", "ㄕㄨ"], ["書包", "包", "ㄅㄠ"]
+      ,["太陽", "太", "ㄊㄞˋ"], ["太陽", "陽", "ㄧㄤˊ"]
+      ,["月亮", "月", "ㄩㄝˋ"], ["月亮", "亮", "ㄌㄧㄤˋ"]
+      ,["天空", "天", "ㄊㄧㄢ"], ["天空", "空", "ㄎㄨㄥ"]
+      ,["雨傘", "雨", "ㄩˇ"], ["雨傘", "傘", "ㄙㄢˇ"]
+      ,["雪人", "雪", "ㄒㄩㄝˇ"], ["雪人", "人", "ㄖㄣˊ"]
+      ,["花朵", "花", "ㄏㄨㄚ"], ["花朵", "朵", "ㄉㄨㄛˇ"]
+      ,["樹木", "樹", "ㄕㄨˋ"], ["樹木", "木", "ㄇㄨˋ"]
+      ,["小鳥", "小", "ㄒㄧㄠˇ"], ["小鳥", "鳥", "ㄋㄧㄠˇ"]
+      ,["貓咪", "貓", "ㄇㄠ"], ["貓咪", "咪", "ㄇㄧ"]
+      ,["河流", "河", "ㄏㄜˊ"], ["河流", "流", "ㄌㄧㄡˊ"]
+      ,["海洋", "海", "ㄏㄞˇ"], ["海洋", "洋", "ㄧㄤˊ"]
+      ,["山路", "山", "ㄕㄢ"], ["山路", "路", "ㄌㄨˋ"]
+      ,["森林", "森", "ㄙㄣ"], ["森林", "林", "ㄌㄧㄣˊ"]
+      ,["桌面", "桌", "ㄓㄨㄛ"], ["桌面", "面", "ㄇㄧㄢˋ"]
+      ,["椅背", "椅", "ㄧˇ"], ["椅背", "背", "ㄅㄟˋ"]
+      ,["電腦", "電", "ㄉㄧㄢˋ"], ["電腦", "腦", "ㄋㄠˇ"]
+      ,["手機", "手", "ㄕㄡˇ"], ["手機", "機", "ㄐㄧ"]
+      ,["音樂", "音", "ㄧㄣ"], ["音樂", "樂", "ㄩㄝˋ"]
+      ,["運動", "運", "ㄩㄣˋ"], ["運動", "動", "ㄉㄨㄥˋ"]
+      ,["足球", "足", "ㄗㄨˊ"], ["足球", "球", "ㄑㄧㄡˊ"]
+      ,["旅行", "旅", "ㄌㄩˇ"], ["旅行", "行", "ㄒㄧㄥˊ"]
+      ,["公園", "公", "ㄍㄨㄥ"], ["公園", "園", "ㄩㄢˊ"]
+      ,["火車", "火", "ㄏㄨㄛˇ"], ["火車", "車", "ㄔㄜ"]
+      ,["飛機", "飛", "ㄈㄟ"], ["飛機", "機", "ㄐㄧ"]
+      ,["早餐", "早", "ㄗㄠˇ"], ["早餐", "餐", "ㄘㄢ"]
+      ,["晚餐", "晚", "ㄨㄢˇ"], ["晚餐", "餐", "ㄘㄢ"]
+      ,["牛奶", "牛", "ㄋㄧㄡˊ"], ["牛奶", "奶", "ㄋㄞˇ"]
+      ,["蛋糕", "蛋", "ㄉㄢˋ"], ["蛋糕", "糕", "ㄍㄠ"]
+      ,["蔬菜", "蔬", "ㄕㄨ"], ["蔬菜", "菜", "ㄘㄞˋ"]
+      ,["蝴蝶", "蝴", "ㄏㄨˊ"], ["蝴蝶", "蝶", "ㄉㄧㄝˊ"]
+      ,["地下城", "地", "ㄉㄧˋ"], ["地下城", "下", "ㄒㄧㄚˋ"], ["地下城", "城", "ㄔㄥˊ"]
+      ,["佛格斯", "佛", "ㄈㄛˊ"], ["佛格斯", "格", "ㄍㄜˊ"], ["佛格斯", "斯", "ㄙ"]
+      ,["茉莉安", "茉", "ㄇㄛˋ"], ["茉莉安", "莉", "ㄌㄧˋ"], ["茉莉安", "安", "ㄢ"]
+      ,["格里斯貝恩", "格", "ㄍㄜˊ"], ["格里斯貝恩", "里", "ㄌㄧˇ"], ["格里斯貝恩", "斯", "ㄙ"], ["格里斯貝恩", "貝", "ㄅㄟˋ"], ["格里斯貝恩", "恩", "ㄣ"],
+      ["愛爾琳", "愛", "ㄞˋ"], ["愛爾琳", "爾", "ㄦˇ"], ["愛爾琳", "琳", "ㄌㄧㄣˊ"],
+      ["娜歐", "娜", "ㄋㄚˋ"], ["娜歐", "歐", "ㄡ"],
+      ["魯艾利", "魯", "ㄌㄨˇ"], ["魯艾利", "艾", "ㄞˋ"], ["魯艾利", "利", "ㄌㄧˋ"],
+      ["特拉克", "特", "ㄊㄜˋ"], ["特拉克", "拉", "ㄌㄚ"], ["特拉克", "克", "ㄎㄜˋ"],
+      ["瑪麗", "瑪", "ㄇㄚˇ"], ["瑪麗", "麗", "ㄌㄧˋ"],
+      ["鄧肯", "鄧", "ㄉㄥˋ"], ["鄧肯", "肯", "ㄎㄣˇ"],
+      ["諾拉", "諾", "ㄋㄨㄛˋ"], ["諾拉", "拉", "ㄌㄚ"],
+      ["迪莉絲", "迪", "ㄉㄧˊ"], ["迪莉絲", "莉", "ㄌㄧˋ"], ["迪莉絲", "絲", "ㄙ"],
+      ["馬努斯", "馬", "ㄇㄚˇ"], ["馬努斯", "努", "ㄋㄨˇ"], ["馬努斯", "斯", "ㄙ"],
+      ["史帝華", "史", "ㄕˇ"], ["史帝華", "帝", "ㄉㄧˋ"], ["史帝華", "華", "ㄏㄨㄚˊ"],
+      ["克莉絲", "克", "ㄎㄜˋ"], ["克莉絲", "莉", "ㄌㄧˋ"], ["克莉絲", "絲", "ㄙ"],
+      ["愛麗沙", "愛", "ㄞˋ"], ["愛麗沙", "麗", "ㄌㄧˋ"], ["愛麗沙", "沙", "ㄕㄚ"],
+      ["艾頓", "艾", "ㄞˋ"], ["艾頓", "頓", "ㄉㄨㄣˋ"],
+      ["班克爾", "班", "ㄅㄢ"], ["班克爾", "克", "ㄎㄜˋ"], ["班克爾", "爾", "ㄦˇ"],
+      ["杜巴頓", "杜", "ㄉㄨˋ"], ["杜巴頓", "巴", "ㄅㄚ"], ["杜巴頓", "頓", "ㄉㄨㄣˋ"],
+      ["堤爾克那", "堤", "ㄊㄧˊ"], ["堤爾克那", "爾", "ㄦˇ"], ["堤爾克那", "克", "ㄎㄜˋ"], ["堤爾克那", "那", "ㄋㄚˋ"],
+      ["艾明瑪夏", "艾", "ㄞˋ"], ["艾明瑪夏", "明", "ㄇㄧㄥˊ"], ["艾明瑪夏", "瑪", "ㄇㄚˇ"], ["艾明瑪夏", "夏", "ㄒㄧㄚˋ"],
+      ["塔拉", "塔", "ㄊㄚˇ"], ["塔拉", "拉", "ㄌㄚ"],
+      ["塔汀", "塔", "ㄊㄚˇ"], ["塔汀", "汀", "ㄊㄧㄥ"],
+      ["伊利亞", "伊", "ㄧ"], ["伊利亞", "利", "ㄌㄧˋ"], ["伊利亞", "亞", "ㄧㄚˋ"]
+    ].map(([word, target, zhuyin]) => ({ word, target, zhuyin }));
     const state = {
       index: 0,
       answers: [],
       scores: { social: 0, polish: 0, rhythm: 0, force: 0, energy: 0 }
     };
+    const zhuyinState = { questions: [], index: 0, score: 0, answered: false };
 
     const $ = selector => document.querySelector(selector);
-    const screens = ["startScreen", "quizScreen", "resultScreen", "galleryScreen"];
+    const screens = ["startScreen", "quizScreen", "resultScreen", "galleryScreen", "zhuyinScreen"];
 
     function showScreen(id) {
       screens.forEach(screen => $("#" + screen).classList.toggle("active", screen === id));
@@ -1152,6 +1361,83 @@
     function beginQuiz() {
       resetState();
       showScreen("quizScreen");
+    }
+
+    function shuffle(items) {
+      const shuffled = [...items];
+      for (let index = shuffled.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+      }
+      return shuffled;
+    }
+
+    function beginZhuyin() {
+      zhuyinState.questions = shuffle(zhuyinItems).slice(0, 10);
+      zhuyinState.index = 0;
+      zhuyinState.score = 0;
+      zhuyinState.answered = false;
+      $("#zhuyinPlay").hidden = false;
+      $("#zhuyinDone").hidden = true;
+      showScreen("zhuyinScreen");
+      renderZhuyinQuestion();
+    }
+
+    function renderZhuyinQuestion() {
+      const question = zhuyinState.questions[zhuyinState.index];
+      const alternatives = shuffle([...new Set(zhuyinItems.map(item => item.zhuyin).filter(value => value !== question.zhuyin))]).slice(0, 3);
+      const answers = shuffle([question.zhuyin, ...alternatives]);
+      zhuyinState.answered = false;
+      $("#zhuyinProgress").textContent = `第 ${zhuyinState.index + 1} / 10 題`;
+      $("#zhuyinScore").textContent = zhuyinState.score;
+      $("#zhuyinMeter").style.width = `${zhuyinState.index / 10 * 100}%`;
+      $("#zhuyinTarget").textContent = question.target;
+      $("#zhuyinWord").innerHTML = question.word.replace(question.target, `<mark>${question.target}</mark>`);
+      $("#zhuyinFeedback").textContent = "";
+      $("#zhuyinNextBtn").disabled = true;
+      const options = $("#zhuyinOptions");
+      options.innerHTML = "";
+      answers.forEach((answer, index) => {
+        const button = document.createElement("button");
+        button.className = "zhuyin-option";
+        button.type = "button";
+        button.textContent = answer;
+        button.setAttribute("aria-label", `選項 ${index + 1}：${answer}`);
+        button.addEventListener("click", () => chooseZhuyin(answer, question.zhuyin));
+        options.appendChild(button);
+      });
+    }
+
+    function chooseZhuyin(answer, correctAnswer) {
+      if (zhuyinState.answered) return;
+      zhuyinState.answered = true;
+      const correct = answer === correctAnswer;
+      if (correct) zhuyinState.score += 1;
+      $("#zhuyinScore").textContent = zhuyinState.score;
+      $("#zhuyinFeedback").textContent = correct ? "答對了！" : `正確答案是 ${correctAnswer}`;
+      $("#zhuyinOptions").querySelectorAll("button").forEach(button => {
+        button.disabled = true;
+        if (button.textContent === correctAnswer) button.classList.add("correct");
+        else if (button.textContent === answer) button.classList.add("incorrect");
+      });
+      $("#zhuyinNextBtn").disabled = false;
+      $("#zhuyinNextBtn").textContent = zhuyinState.index === 9 ? "看成績" : "下一題";
+    }
+
+    function nextZhuyinQuestion() {
+      if (!zhuyinState.answered) return;
+      if (zhuyinState.index === 9) {
+        $("#zhuyinPlay").hidden = true;
+        $("#zhuyinDone").hidden = false;
+        $("#zhuyinFinalScore").textContent = zhuyinState.score;
+        $("#zhuyinResultText").textContent = zhuyinState.score === 10
+          ? "全對！你的注音反應超快。"
+          : zhuyinState.score >= 7 ? "很不錯，繼續保持這個手感！" : "再練一回，這些字音會越來越熟。";
+        $("#zhuyinMeter").style.width = "100%";
+        return;
+      }
+      zhuyinState.index += 1;
+      renderZhuyinQuestion();
     }
 
     function renderQuestion() {
@@ -1302,7 +1588,12 @@
     $("#startBtn").addEventListener("click", beginQuiz);
     $("#galleryStart").addEventListener("click", beginQuiz);
     $("#againBtn").addEventListener("click", beginQuiz);
-    $("#navRestart").addEventListener("click", beginQuiz);
+    $("#navHome").addEventListener("click", () => showScreen("startScreen"));
+    $("#zhuyinStartBtn").addEventListener("click", beginZhuyin);
+    $("#zhuyinNextBtn").addEventListener("click", nextZhuyinQuestion);
+    $("#zhuyinHomeBtn").addEventListener("click", () => showScreen("startScreen"));
+    $("#zhuyinDoneHomeBtn").addEventListener("click", () => showScreen("startScreen"));
+    $("#zhuyinReplayBtn").addEventListener("click", beginZhuyin);
     $("#peekBtn").addEventListener("click", () => showScreen("galleryScreen"));
     $("#navGallery").addEventListener("click", () => showScreen("galleryScreen"));
     $("#copyBtn").addEventListener("click", copyResult);
@@ -1324,6 +1615,7 @@
       if (q.options[num - 1]) choose(q.options[num - 1][1]);
     });
 
+    $("#zhuyinBankInfo").textContent = `從 ${zhuyinItems.length} 題題庫隨機抽 10 題，選出正確注音，答對累積分數！`;
     renderGallery();
     renderQuestion();
   </script>
